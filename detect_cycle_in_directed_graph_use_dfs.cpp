@@ -1,0 +1,65 @@
+#include<iostream>
+#include<set>			//https://www.tutorialspoint.com/Detect-Cycle-in-a-Directed-Graph
+#include<algorithm>
+#include<utility>
+#include<vector>
+using namespace std;
+
+#define NODE 5						// semicolon not put them...
+int graph[NODE][NODE]={{0,1,0,0,0},
+					   {0,0,0,0,0},
+					   {1,0,0,1,0},
+					   {0,0,0,0,1},
+					   {0,0,1,0,0}};
+
+bool dfs(int curr,set<int >& wSet,set<int >& gSet,set<int >& bSet)
+{
+	wSet.erase(wSet.find(curr));
+	gSet.insert(curr);
+
+	for(int v=0;v<NODE;v++)
+	{
+		if(graph[curr][v] != 0)
+		{	
+			if(bSet.find(v) != bSet.end())
+				continue;
+			if(gSet.find(v) != gSet.end())
+				return true;
+			if(dfs(v,wSet,gSet,bSet))
+				return true;
+		}
+	}
+
+	gSet.erase(gSet.find(curr));
+	bSet.insert(curr);
+	return false;
+}	
+
+bool hasCycle()
+{
+	set<int > wSet,gSet,bSet;
+	for(int i=0;i<NODE;i++)
+		wSet.insert(i);
+
+	while(wSet.size() > 0)
+	{
+		for(int current=0; current < NODE; current++)
+		{	
+			if(wSet.find(current) != wSet.end())
+				if(dfs(current,wSet,gSet,bSet))
+					return true;
+		}	
+	}
+
+	return false;
+}				   
+
+int main()
+{
+	bool result=hasCycle();
+	
+	if(result)
+		cout<<"Cycle in Graph :Is True"<<endl;
+	else
+		cout<<"Cycle in Graph :Is False"<<endl;
+}
